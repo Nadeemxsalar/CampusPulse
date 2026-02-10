@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CampusPulse | Enterprise Resource Planning System</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ========================================
+        1. CSS VARIABLES & THEME ENGINE
+        ========================================
+        */
+        :root {
+            /* Brand Identity */
+            --primary-50: #eef2ff;
+            --primary-100: #e0e7ff;
+            --primary-500: #6366f1;
+            --primary-600: #4f46e5;
+            --primary-700: #4338ca;
+            
+            --secondary-500: #ec4899;
+            --accent-500: #0ea5e9;
+            
+            /* Backgrounds */
+            --bg-body: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-sidebar: #ffffff;
+            
+            /* Text Colors */
+            --text-main: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            
+            /* Borders & Shadows */
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            
+            /* Layout */
+            --sidebar-w: 280px;
+            --header-h: 70px;
+            --radius: 12px;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-sidebar: #1e293b;
+            --text-main: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --primary-500: #818cf8;
+            --primary-600: #6366f1;
+        }
+
+        /* ========================================
+        2. GLOBAL RESET & BASE STYLES
+        ========================================
+        */
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%; width: 100%;
+            overflow: hidden; /* Prevent body scroll, handle in app-main */
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 10px; opacity: 0.5; }
+
+        /* ========================================
+        3. SIDEBAR NAVIGATION COMPONENT
+        ========================================
+        */
+        .app-sidebar {
+            width: var(--sidebar-w);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+            padding: 24px;
+            z-index: 50;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .brand-logo {
+            display: flex; align-items: center; gap: 12px;
+            font-size: 1.5rem; font-weight: 800;
+            color: var(--primary-600);
+            margin-bottom: 40px; padding-left: 8px;
+        }
+
+        .nav-section { margin-bottom: 32px; }
+        
+        .nav-section-title {
+            font-size: 0.75rem; font-weight: 700;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.05em; margin-bottom: 12px; padding-left: 12px;
+        }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px; margin-bottom: 4px;
+            border-radius: var(--radius); cursor: pointer;
+            color: var(--text-secondary); font-weight: 500; font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--primary-50);
+            color: var(--primary-700);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-600);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-item i { font-size: 1.1rem; width: 24px; text-align: center; }
+
+        /* ========================================
+        4. MAIN CONTENT AREA
+        ========================================
+        */
+        .app-wrapper {
+            flex: 1; display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
+        }
+
+        .app-header {
+            height: var(--header-h);
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 32px;
+            flex-shrink: 0;
+            z-index: 40;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        
+        .hamburger-btn {
+            display: none; background: none; border: none;
+            font-size: 1.5rem; color: var(--text-main); cursor: pointer;
+        }
+
+        .page-title { font-size: 1.25rem; font-weight: 700; }
+
+        .header-right { display: flex; align-items: center; gap: 20px; }
+
+        .theme-toggle {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-secondary);
+            transition: 0.2s;
+        }
+        .theme-toggle:hover { background-color: var(--bg-body); color: var(--primary-600); }
+
+        .user-profile-pill {
+            display: flex; align-items: center; gap: 12px;
+            padding: 6px 8px 6px 16px;
+            background-color: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 50px; cursor: pointer;
+            transition: 0.2s;
+        }
+        .user-profile-pill:hover { border-color: var(--primary-500); }
+
+        .app-main {
+            flex: 1; padding: 32px;
+            overflow-y: auto; overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* ========================================
+        5. UI COMPONENTS (Cards, Buttons, Tables)
+        ========================================
+        */
+        .card {
+            background-color: var(--bg-surface);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            transition: transform 0.2s;
+        }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+
+        /* Stats Cards */
+        .stat-card { display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
+        .stat-icon { position: absolute; right: 20px; top: 20px; font-size: 3rem; opacity: 0.1; color: var(--text-main); }
+        .stat-value { font-size: 2.2rem; font-weight: 800; color: var(--primary-600); }
+        .stat-label { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; }
+
+        /* Tables */
+        .table-responsive { width: 100%; overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border-color); }
+        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+        th { background-color: var(--bg-body); padding: 16px; text-align: left; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+        td { padding: 16px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 0.95rem; }
+        tr:last-child td { border-bottom: none; }
+        
+        /* Badges */
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-success { background-color: #dcfce7; color: #15803d; }
+        .badge-warning { background-color: #fef9c3; color: #a16207; }
+        .badge-danger { background-color: #fee2e2; color: #b91c1c; }
+
+        /* Buttons & Forms */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 20px; border-radius: 8px; border: none;
+            font-weight: 600; cursor: pointer; transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .btn-primary { background-color: var(--primary-600); color: white; }
+        .btn-primary:hover { background-color: var(--primary-700); }
+        .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        
+        input, select, textarea {
+            width: 100%; padding: 12px 16px;
+            border: 1px solid var(--border-color); border-radius: 8px;
+            background-color: var(--bg-body); color: var(--text-main);
+            outline: none; margin-bottom: 16px; font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary-500); box-shadow: 0 0 0 2px var(--primary-100); }
+
+        /* ========================================
+        6. MODALS & OVERLAYS
+        ========================================
+        */
+        .modal-overlay {
+            position: fixed; inset: 0; background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px); z-index: 1000;
+            display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        
+        .modal-container {
+            background-color: var(--bg-surface);
+            width: 90%; max-width: 450px;
+            border-radius: 20px; padding: 32px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .modal-overlay.open .modal-container { transform: translateY(0); }
+
+        /* Login Specific */
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-icon { font-size: 3rem; color: var(--primary-600); margin-bottom: 10px; }
+
+        /* ========================================
+        7. MOBILE RESPONSIVE
+        ========================================
+        */
+        .sidebar-overlay {
+            position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); z-index: 45; display: none;
+        }
+
+        @media (max-width: 1024px) {
+            .app-sidebar { position: fixed; left: -100%; top: 0; bottom: 0; }
+            .app-sidebar.open { left: 0; }
+            .sidebar-overlay.active { display: block; }
+            .hamburger-btn { display: block; }
+            .app-header { padding: 0 16px; }
+            .app-main { padding: 16px; }
+            .user-profile-pill span { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-container">
+            <div class="login-header">
+                <div class="login-icon"><i class="fas fa-university"></i></div>
+                <h2>Portal Access</h2>
+                <p style="color: var(--text-secondary);">Secure login for Students & Faculty</p>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div style="text-align: left; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">User ID</div>
+                <input type="text" id="loginId" placeholder="e.g., STU001 or ADMIN" required>
+                
+                <div style="text-align: left; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">Password</div>
+                <input type="password" id="loginPass" placeholder="Enter password" required>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 14px;">
+                    Login Securely <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+            <button onclick="closeLoginModal()" class="btn btn-outline" style="width: 100%; margin-top: 12px; justify-content: center;">
+                Cancel
+            </button>
+            <div style="margin-top: 24px; padding: 12px; background: var(--bg-body); border-radius: 8px; font-size: 0.8rem; color: var(--text-secondary); text-align: center;">
+                <div><b>Admin:</b> ADMIN / 12345</div>
+                <div><b>Student:</b> STU001 / 12345</div>
+            </div>
+        </div>
+    </div>
+
+    <aside class="app-sidebar" id="sidebar">
+        <div class="brand-logo">
+            <i class="fas fa-graduation-cap"></i> CAMPUSPULSE
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">General Access</div>
+            <div class="nav-item active" onclick="navigate('home')"><i class="fas fa-home"></i> Home</div>
+            <div class="nav-item" onclick="navigate('notices')"><i class="fas fa-bullhorn"></i> Notice Board</div>
+            <div class="nav-item" onclick="navigate('about')"><i class="fas fa-info-circle"></i> About Institute</div>
+            <div class="nav-item" onclick="navigate('contact')"><i class="fas fa-headset"></i> Help Desk</div>
+        </div>
+
+        <div class="nav-section hidden" id="menu-student">
+            <div class="nav-section-title">Student Dashboard</div>
+            <div class="nav-item" onclick="navigate('stu-dash')"><i class="fas fa-th-large"></i> Overview</div>
+            <div class="nav-item" onclick="navigate('stu-attendance')"><i class="fas fa-user-clock"></i> Attendance</div>
+            <div class="nav-item" onclick="navigate('stu-grievance')"><i class="fas fa-file-signature"></i> Grievance</div>
+            <div class="nav-item" onclick="navigate('stu-timetable')"><i class="fas fa-calendar-alt"></i> Time Table</div>
+        </div>
+
+        <div class="nav-section hidden" id="menu-admin">
+            <div class="nav-section-title">Administration</div>
+            <div class="nav-item" onclick="navigate('adm-dash')"><i class="fas fa-chart-pie"></i> Analytics</div>
+            <div class="nav-item" onclick="navigate('adm-users')"><i class="fas fa-users-cog"></i> User Manager</div>
+            <div class="nav-item" onclick="navigate('adm-tickets')"><i class="fas fa-tasks"></i> Ticket Audit</div>
+            <div class="nav-item" onclick="navigate('adm-notices')"><i class="fas fa-edit"></i> Edit Notices</div>
+        </div>
+    </aside>
+
+    <div class="app-wrapper">
+        <header class="app-header">
+            <div class="header-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <div class="page-title" id="headerTitle">Home</div>
+            </div>
+            
+            <div class="header-right">
+                <div class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-adjust"></i></div>
+                
+                <button id="headerLoginBtn" class="btn btn-primary btn-sm" onclick="openLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i> Portal Login
+                </button>
+
+                <div id="headerProfile" class="user-profile-pill hidden" onclick="handleLogout()">
+                    <img src="https://ui-avatars.com/api/?name=Guest" id="headerAvatar" style="width: 32px; height: 32px; border-radius: 50%;">
+                    <div style="display: flex; flex-direction: column; line-height: 1.2;">
+                        <span id="headerName" style="font-size: 0.85rem; font-weight: 600;">Guest</span>
+                        <span id="headerRole" style="font-size: 0.7rem; color: var(--text-secondary);">Visitor</span>
+                    </div>
+                    <i class="fas fa-sign-out-alt" style="color: var(--danger);"></i>
+                </div>
+            </div>
+        </header>
+
+        <main class="app-main">
+            
+            <section id="view-home" class="view-section">
+                <div class="card" style="background: linear-gradient(135deg, var(--primary-600), var(--primary-700)); color: white; padding: 48px; border: none; text-align: center;">
+                    <h1 style="font-size: 2.5rem; margin-bottom: 16px;">Welcome to CampusPulse</h1>
+                    <p style="font-size: 1.1rem; opacity: 0.9; max-width: 600px; margin: 0 auto 32px auto;">
+                        The Next-Gen Enterprise Resource Planning System for Academic Excellence. Seamlessly connecting Students, Faculty, and Administration.
+                    </p>
+                    <div style="display: flex; gap: 16px; justify-content: center;">
+                        <button onclick="openLoginModal()" class="btn" style="background: white; color: var(--primary-600);">
+                            Access Portal <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button onclick="navigate('notices')" class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">
+                            View Notices
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid-4">
+                    <div class="card stat-card">
+                        <div class="stat-value">2.5k+</div>
+                        <div class="stat-label">Students</div>
+                        <i class="fas fa-user-graduate stat-icon"></i>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-value">120+</div>
+                        <div class="stat-label">Faculty Members</div>
+                        <i class="fas fa-chalkboard-teacher stat-icon"></i>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-value">98%</div>
+                        <div class="stat-label">Placement Rate</div>
+                        <i class="fas fa-briefcase stat-icon"></i>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-value">24/7</div>
+                        <div class="stat-label">Digital Library</div>
+                        <i class="fas fa-book stat-icon"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-notices" class="view-section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Latest Announcements</div>
+                        <span class="badge badge-success">Live Updates</span>
+                    </div>
+                    <div id="public-notice-list">
+                        </div>
+                </div>
+            </section>
+
+            <section id="view-stu-dash" class="view-section hidden">
+                <div class="grid-2">
+                    <div class="card" style="background: linear-gradient(to right, #4f46e5, #6366f1); color: white;">
+                        <h2>Hello, <span class="user-name-span">Student</span>!</h2>
+                        <p style="opacity: 0.9; margin-top: 8px;">You have <b>3</b> upcoming classes today.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Quick Actions</div>
+                        <div style="display: flex; gap: 12px; margin-top: 16px;">
+                            <button onclick="navigate('stu-grievance')" class="btn btn-outline btn-sm">File Complaint</button>
+                            <button onclick="navigate('stu-timetable')" class="btn btn-outline btn-sm">View Timetable</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title" style="margin-bottom: 20px;">Attendance Overview</div>
+                    <div style="height: 250px;">
+                        <canvas id="studentAttendanceChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-stu-grievance" class="view-section hidden">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-title">File New Grievance</div>
+                        <form onsubmit="submitTicket(event)" style="margin-top: 20px;">
+                            <label style="font-size: 0.9rem; font-weight: 600;">Department</label>
+                            <select id="t-dept">
+                                <option>Examination</option><option>Accounts</option><option>Library</option><option>Hostel</option><option>IT Support</option>
+                            </select>
+                            
+                            <label style="font-size: 0.9rem; font-weight: 600;">Issue Description</label>
+                            <textarea id="t-desc" rows="4" placeholder="Please describe your issue in detail..." required></textarea>
+                            
+                            <button type="submit" class="btn btn-primary">Submit Ticket</button>
+                        </form>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">My Ticket History</div>
+                        <div class="table-responsive" style="margin-top: 16px;">
+                            <table>
+                                <thead><tr><th>Ref ID</th><th>Dept</th><th>Status</th><th>Action</th></tr></thead>
+                                <tbody id="stu-ticket-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-adm-dash" class="view-section hidden">
+                <div class="grid-4">
+                    <div class="card stat-card">
+                        <div class="stat-value" id="adm-total-users">0</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-value" id="adm-pending-tkt">0</div>
+                        <div class="stat-label">Pending Tickets</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Grievance Analysis</div>
+                    <div style="height: 300px;">
+                        <canvas id="adminChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-adm-users" class="view-section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Student Management</div>
+                        <button onclick="showAddUserModal()" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Student</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Name</th><th>User ID</th><th>Department</th><th>Status</th><th>Action</th></tr></thead>
+                            <tbody id="adm-users-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="view-adm-tickets" class="view-section hidden">
+                <div class="card">
+                    <div class="card-title">Global Ticket Audit</div>
+                    <div class="table-responsive" style="margin-top: 16px;">
+                        <table>
+                            <thead><tr><th>Student</th><th>ID</th><th>Issue</th><th>Status</th><th>Action</th></tr></thead>
+                            <tbody id="adm-tickets-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-contact" class="view-section hidden">
+                <div class="card"><h2>Help Desk</h2><p>Contact admin@campuspulse.edu for login issues.</p></div>
+            </section>
+            <section id="view-about" class="view-section hidden">
+                <div class="card"><h2>About Us</h2><p>CampusPulse is a state-of-the-art ERP solution developed by the BCA Dept.</p></div>
+            </section>
+            <section id="view-stu-timetable" class="view-section hidden">
+                <div class="card"><h2>Time Table</h2><p>Your class schedule is up to date.</p></div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        /* --- CONSTANTS & STATE --- */
+        const DB_KEY_USERS = 'cp_v5_users';
+        const DB_KEY_TICKETS = 'cp_v5_tickets';
+        const DB_KEY_NOTICES = 'cp_v5_notices';
+
+        // Initial Data Seeding
+        const defaultUsers = [
+            { id: 'ADMIN', pass: '12345', name: 'System Admin', role: 'admin', dept: 'IT' },
+            { id: 'STU001', pass: '12345', name: 'Rahul Sharma', role: 'student', dept: 'BCA' },
+            { id: 'STU002', pass: '12345', name: 'Priya Singh', role: 'student', dept: 'BBA' }
+        ];
+
+        const defaultNotices = [
+            { title: 'Mid-Sem Exams', date: '10 Feb 2026', body: 'Exams start from 15th Feb. Check schedule.' },
+            { title: 'Holiday Declared', date: '08 Feb 2026', body: 'Campus closed on Friday due to Maintenance.' }
+        ];
+
+        let state = {
+            users: JSON.parse(localStorage.getItem(DB_KEY_USERS)) || defaultUsers,
+            tickets: JSON.parse(localStorage.getItem(DB_KEY_TICKETS)) || [],
+            notices: JSON.parse(localStorage.getItem(DB_KEY_NOTICES)) || defaultNotices,
+            currentUser: JSON.parse(sessionStorage.getItem('cp_session')) || null
+        };
+
+        // Initialize App
+        window.onload = () => {
+            if(state.currentUser) {
+                initSessionUI();
+            } else {
+                renderPublicNotices();
+            }
+            saveState();
+        };
+
+        /* --- NAVIGATION --- */
+        function navigate(viewId) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            // Show target view
+            const target = document.getElementById('view-' + viewId);
+            if(target) target.classList.remove('hidden');
+
+            // Active Menu State
+            // (Simplified: active class logic based on click is handled in sidebar click, but here we can force it if needed)
+            
+            // Header Title Update
+            const titles = {
+                'home': 'Home', 'notices': 'Notice Board', 'stu-dash': 'Dashboard', 
+                'stu-grievance': 'Grievance Redressal', 'adm-dash': 'Admin Analytics'
+            };
+            document.getElementById('headerTitle').innerText = titles[viewId] || 'CampusPulse';
+
+            // Mobile Sidebar Close
+            if(window.innerWidth < 1024) toggleSidebar();
+
+            // Load View Data
+            if(viewId === 'notices') renderPublicNotices();
+            if(viewId === 'stu-dash') loadStudentCharts();
+            if(viewId === 'stu-grievance') renderStudentTickets();
+            if(viewId === 'adm-dash') loadAdminCharts();
+            if(viewId === 'adm-users') renderAdminUsers();
+            if(viewId === 'adm-tickets') renderAdminTickets();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
+        /* --- AUTHENTICATION --- */
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('open');
+        }
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('open');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginId').value;
+            const p = document.getElementById('loginPass').value;
+
+            const user = state.users.find(x => x.id === u && x.pass === p);
+            
+            if(user) {
+                state.currentUser = user;
+                sessionStorage.setItem('cp_session', JSON.stringify(user));
+                closeLoginModal();
+                initSessionUI();
+                alert(`Welcome, ${user.name}`);
+            } else {
+                alert('Invalid Credentials');
+            }
+        }
+
+        function handleLogout() {
+            if(confirm('Logout of Portal?')) {
+                state.currentUser = null;
+                sessionStorage.removeItem('cp_session');
+                location.reload(); // Clean reset
+            }
+        }
+
+        function initSessionUI() {
+            const user = state.currentUser;
+            
+            // Header Updates
+            document.getElementById('headerLoginBtn').classList.add('hidden');
+            document.getElementById('headerProfile').classList.remove('hidden');
+            document.getElementById('headerName').innerText = user.name;
+            document.getElementById('headerRole').innerText = user.role.toUpperCase();
+            document.getElementById('headerAvatar').src = `https://ui-avatars.com/api/?name=${user.name}&background=random`;
+            
+            document.querySelectorAll('.user-name-span').forEach(el => el.innerText = user.name);
+
+            // Sidebar Updates
+            if(user.role === 'student') {
+                document.getElementById('menu-student').classList.remove('hidden');
+                navigate('stu-dash');
+            } else if(user.role === 'admin') {
+                document.getElementById('menu-admin').classList.remove('hidden');
+                navigate('adm-dash');
+            }
+        }
+
+        /* --- PUBLIC MODULES --- */
+        function renderPublicNotices() {
+            const container = document.getElementById('public-notice-list');
+            container.innerHTML = state.notices.map(n => `
+                <div style="border-left: 4px solid var(--primary-600); padding: 16px; background: var(--bg-body); margin-bottom: 12px; border-radius: 0 8px 8px 0;">
+                    <h4 style="margin-bottom: 4px; color: var(--text-main);">${n.title}</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px;">${n.body}</p>
+                    <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);"><i class="far fa-calendar-alt"></i> ${n.date}</div>
+                </div>
+            `).join('');
+        }
+
+        /* --- STUDENT MODULES --- */
+        function submitTicket(e) {
+            e.preventDefault();
+            const t = {
+                id: 'TKT' + Math.floor(Math.random() * 9000),
+                uid: state.currentUser.id,
+                name: state.currentUser.name,
+                dept: document.getElementById('t-dept').value,
+                desc: document.getElementById('t-desc').value,
+                status: 'Pending',
+                date: new Date().toLocaleDateString()
+            };
+            state.tickets.push(t);
+            saveState();
+            alert('Ticket Submitted: ' + t.id);
+            e.target.reset();
+            renderStudentTickets();
+        }
+
+        function renderStudentTickets() {
+            const myTickets = state.tickets.filter(t => t.uid === state.currentUser.id);
+            const tbody = document.getElementById('stu-ticket-tbody');
+            if(myTickets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No History Found</td></tr>';
+                return;
+            }
+            tbody.innerHTML = myTickets.map(t => `
+                <tr>
+                    <td><b>${t.id}</b></td>
+                    <td>${t.dept}</td>
+                    <td><span class="badge ${t.status==='Pending'?'badge-warning':'badge-success'}">${t.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="generatePDF('${t.id}')"><i class="fas fa-print"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadStudentCharts() {
+            // Mock Chart
+            const ctx = document.getElementById('studentAttendanceChart').getContext('2d');
+            if(window.stuChart) window.stuChart.destroy();
+            window.stuChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                    datasets: [{
+                        label: 'Hours Attended',
+                        data: [5, 4, 6, 5, 3],
+                        backgroundColor: '#6366f1',
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        /* --- ADMIN MODULES --- */
+        function renderAdminUsers() {
+            const tbody = document.getElementById('adm-users-tbody');
+            const students = state.users.filter(u => u.role === 'student');
+            tbody.innerHTML = students.map(u => `
+                <tr>
+                    <td>${u.name}</td>
+                    <td><b>${u.id}</b></td>
+                    <td>${u.dept}</td>
+                    <td><span class="badge badge-success">Active</span></td>
+                    <td><button onclick="removeUser('${u.id}')" class="btn btn-sm" style="color: var(--danger);"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        function removeUser(id) {
+            if(confirm('Delete user?')) {
+                state.users = state.users.filter(u => u.id !== id);
+                saveState();
+                renderAdminUsers();
+            }
+        }
+
+        function showAddUserModal() {
+            const name = prompt("Enter Student Name:");
+            const id = prompt("Enter Student ID:");
+            const dept = prompt("Enter Department (BCA/BBA):");
+            if(name && id) {
+                state.users.push({ id, pass: '12345', name, role: 'student', dept });
+                saveState();
+                renderAdminUsers();
+            }
+        }
+
+        function renderAdminTickets() {
+            const tbody = document.getElementById('adm-tickets-tbody');
+            tbody.innerHTML = state.tickets.map((t, idx) => `
+                <tr>
+                    <td>${t.name}</td>
+                    <td>${t.id}</td>
+                    <td><small>${t.desc.substring(0,15)}...</small></td>
+                    <td><span class="badge ${t.status==='Pending'?'badge-warning':'badge-success'}">${t.status}</span></td>
+                    <td>${t.status === 'Pending' ? `<button onclick="resolveTicket(${idx})" class="btn btn-sm btn-primary">Solve</button>` : 'Resolved'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function resolveTicket(idx) {
+            state.tickets[idx].status = 'Resolved';
+            saveState();
+            renderAdminTickets();
+        }
+
+        function loadAdminCharts() {
+            document.getElementById('adm-total-users').innerText = state.users.length;
+            document.getElementById('adm-pending-tkt').innerText = state.tickets.filter(t => t.status === 'Pending').length;
+
+            const ctx = document.getElementById('adminChart').getContext('2d');
+            const pending = state.tickets.filter(t => t.status === 'Pending').length;
+            const resolved = state.tickets.filter(t => t.status === 'Resolved').length;
+
+            if(window.admChart) window.admChart.destroy();
+            window.admChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'Resolved'],
+                    datasets: [{
+                        data: [pending, resolved],
+                        backgroundColor: ['#f59e0b', '#10b981']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        /* --- PDF GEN --- */
+        function generatePDF(ticketId) {
+            const t = state.tickets.find(x => x.id === ticketId);
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(22);
+            doc.text("CampusPulse Grievance Receipt", 20, 20);
+            doc.setFontSize(12);
+            doc.text(`Ticket ID: ${t.id}`, 20, 40);
+            doc.text(`Student: ${t.name}`, 20, 50);
+            doc.text(`Dept: ${t.dept}`, 20, 60);
+            doc.text(`Status: ${t.status}`, 20, 70);
+            doc.text(`Description:`, 20, 90);
+            doc.text(t.desc, 20, 100);
+            doc.save(`Ticket_${t.id}.pdf`);
+        }
+
+        /* --- UTILS --- */
+        function saveState() {
+            localStorage.setItem(DB_KEY_USERS, JSON.stringify(state.users));
+            localStorage.setItem(DB_KEY_TICKETS, JSON.stringify(state.tickets));
+            localStorage.setItem(DB_KEY_NOTICES, JSON.stringify(state.notices));
+        }
+
+        function toggleTheme() {
+            if(document.body.hasAttribute('data-theme')) {
+                document.body.removeAttribute('data-theme');
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+        }
+    </script>
+</body>
+</html>
