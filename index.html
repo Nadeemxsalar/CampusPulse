@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CampusPulse | Enterprise Resource Planning System</title>
+    <title>CampusPulse | Enterprise Resource Planning</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -12,286 +12,122 @@
 
     <style>
         /* ========================================
-        1. CSS VARIABLES & THEME ENGINE
-        ========================================
-        */
+        1. CSS VARIABLES & THEME
+        ======================================== */
         :root {
-            /* Brand Identity */
-            --primary-50: #eef2ff;
-            --primary-100: #e0e7ff;
-            --primary-500: #6366f1;
-            --primary-600: #4f46e5;
-            --primary-700: #4338ca;
+            --primary-50: #eef2ff; --primary-100: #e0e7ff;
+            --primary-500: #6366f1; --primary-600: #4f46e5; --primary-700: #4338ca;
             
-            --secondary-500: #ec4899;
-            --accent-500: #0ea5e9;
-            
-            /* Backgrounds */
-            --bg-body: #f8fafc;
-            --bg-surface: #ffffff;
+            --bg-body: #f1f5f9; 
+            --bg-surface: #ffffff; 
             --bg-sidebar: #ffffff;
-            
-            /* Text Colors */
-            --text-main: #0f172a;
-            --text-secondary: #64748b;
+            --text-main: #0f172a; 
+            --text-secondary: #475569; 
             --text-muted: #94a3b8;
+            --border-color: #e2e8f0; 
             
-            /* Borders & Shadows */
-            --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            
-            /* Layout */
-            --sidebar-w: 280px;
-            --header-h: 70px;
+            --sidebar-w: 260px; 
+            --header-h: 70px; 
             --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         [data-theme="dark"] {
-            --bg-body: #0f172a;
-            --bg-surface: #1e293b;
+            --bg-body: #0f172a; 
+            --bg-surface: #1e293b; 
             --bg-sidebar: #1e293b;
-            --text-main: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #64748b;
+            --text-main: #f8fafc; 
+            --text-secondary: #cbd5e1; 
             --border-color: #334155;
-            --primary-500: #818cf8;
-            --primary-600: #6366f1;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        html, body { height: 100%; width: 100%; overflow: hidden; }
+        body { background-color: var(--bg-body); color: var(--text-main); display: flex; transition: background-color 0.3s, color 0.3s; }
 
         /* ========================================
-        2. GLOBAL RESET & BASE STYLES
-        ========================================
-        */
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: 'Inter', system-ui, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            height: 100%; width: 100%;
-            overflow: hidden; /* Prevent body scroll, handle in app-main */
-        }
-
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            display: flex;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 10px; opacity: 0.5; }
-
-        /* ========================================
-        3. SIDEBAR NAVIGATION COMPONENT
-        ========================================
-        */
+        2. SIDEBAR NAVIGATION
+        ======================================== */
         .app-sidebar {
-            width: var(--sidebar-w);
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column;
-            padding: 24px;
-            z-index: 50;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: var(--sidebar-w); background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; padding: 24px; z-index: 50; transition: transform 0.3s; overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.02);
         }
-
-        .brand-logo {
-            display: flex; align-items: center; gap: 12px;
-            font-size: 1.5rem; font-weight: 800;
-            color: var(--primary-600);
-            margin-bottom: 40px; padding-left: 8px;
-        }
-
-        .nav-section { margin-bottom: 32px; }
+        .brand-logo { font-size: 1.4rem; font-weight: 800; color: var(--primary-600); margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        .nav-section-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 15px; margin-bottom: 10px; padding-left: 12px; letter-spacing: 0.5px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin-bottom: 4px; border-radius: var(--radius); cursor: pointer; color: var(--text-secondary); font-weight: 500; font-size: 0.95rem; transition: all 0.2s ease; }
+        .nav-item:hover { background-color: var(--primary-50); color: var(--primary-700); transform: translateX(5px); }
+        .nav-item.active { background-color: var(--primary-600); color: white; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); }
         
-        .nav-section-title {
-            font-size: 0.75rem; font-weight: 700;
-            color: var(--text-muted); text-transform: uppercase;
-            letter-spacing: 0.05em; margin-bottom: 12px; padding-left: 12px;
-        }
-
-        .nav-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 16px; margin-bottom: 4px;
-            border-radius: var(--radius); cursor: pointer;
-            color: var(--text-secondary); font-weight: 500; font-size: 0.95rem;
-            transition: all 0.2s ease;
-        }
-
-        .nav-item:hover {
-            background-color: var(--primary-50);
-            color: var(--primary-700);
-        }
-
-        .nav-item.active {
-            background-color: var(--primary-600);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-
-        .nav-item i { font-size: 1.1rem; width: 24px; text-align: center; }
+        [data-theme="dark"] .nav-item:hover { background-color: #334155; color: white; }
+        [data-theme="dark"] .nav-item.active { background-color: var(--primary-600); color: white; }
+        
+        .hidden { display: none !important; }
 
         /* ========================================
-        4. MAIN CONTENT AREA
-        ========================================
-        */
-        .app-wrapper {
-            flex: 1; display: flex; flex-direction: column;
-            position: relative; overflow: hidden;
-        }
-
-        .app-header {
-            height: var(--header-h);
-            background-color: var(--bg-surface);
-            border-bottom: 1px solid var(--border-color);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 32px;
-            flex-shrink: 0;
-            z-index: 40;
-        }
-
-        .header-left { display: flex; align-items: center; gap: 20px; }
-        
-        .hamburger-btn {
-            display: none; background: none; border: none;
-            font-size: 1.5rem; color: var(--text-main); cursor: pointer;
-        }
-
-        .page-title { font-size: 1.25rem; font-weight: 700; }
-
-        .header-right { display: flex; align-items: center; gap: 20px; }
-
-        .theme-toggle {
-            width: 40px; height: 40px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: var(--text-secondary);
-            transition: 0.2s;
-        }
-        .theme-toggle:hover { background-color: var(--bg-body); color: var(--primary-600); }
-
-        .user-profile-pill {
-            display: flex; align-items: center; gap: 12px;
-            padding: 6px 8px 6px 16px;
-            background-color: var(--bg-body);
-            border: 1px solid var(--border-color);
-            border-radius: 50px; cursor: pointer;
-            transition: 0.2s;
-        }
-        .user-profile-pill:hover { border-color: var(--primary-500); }
-
-        .app-main {
-            flex: 1; padding: 32px;
-            overflow-y: auto; overflow-x: hidden;
-            scroll-behavior: smooth;
-        }
+        3. MAIN LAYOUT
+        ======================================== */
+        .app-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .app-header { height: var(--header-h); background-color: var(--bg-surface); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; z-index: 40; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .hamburger-btn { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
+        .app-main { flex: 1; padding: 32px; overflow-y: auto; scroll-behavior: smooth; }
+        .user-profile-pill { display: flex; align-items: center; gap: 12px; padding: 6px 16px 6px 6px; background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 50px; cursor: pointer; transition: 0.2s; }
+        .user-profile-pill:hover { background-color: var(--primary-50); border-color: var(--primary-500); }
 
         /* ========================================
-        5. UI COMPONENTS (Cards, Buttons, Tables)
-        ========================================
-        */
-        .card {
-            background-color: var(--bg-surface);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-            margin-bottom: 24px;
-            transition: transform 0.2s;
-        }
+        4. COMPONENTS
+        ======================================== */
+        .card { background-color: var(--bg-surface); border-radius: 16px; padding: 24px; border: 1px solid var(--border-color); margin-bottom: 24px; box-shadow: var(--shadow); }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
         
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
-
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
-
-        /* Stats Cards */
-        .stat-card { display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
-        .stat-icon { position: absolute; right: 20px; top: 20px; font-size: 3rem; opacity: 0.1; color: var(--text-main); }
-        .stat-value { font-size: 2.2rem; font-weight: 800; color: var(--primary-600); }
-        .stat-label { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; }
-
-        /* Tables */
         .table-responsive { width: 100%; overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border-color); }
         table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-        th { background-color: var(--bg-body); padding: 16px; text-align: left; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
-        td { padding: 16px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 0.95rem; }
-        tr:last-child td { border-bottom: none; }
+        th { background-color: var(--bg-body); padding: 14px; text-align: left; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border-color); letter-spacing: 0.5px; }
+        td { padding: 14px; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; color: var(--text-main); }
+        tr:hover td { background-color: rgba(99, 102, 241, 0.05); }
         
-        /* Badges */
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge { padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; }
         .badge-success { background-color: #dcfce7; color: #15803d; }
         .badge-warning { background-color: #fef9c3; color: #a16207; }
         .badge-danger { background-color: #fee2e2; color: #b91c1c; }
 
-        /* Buttons & Forms */
-        .btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 10px 20px; border-radius: 8px; border: none;
-            font-weight: 600; cursor: pointer; transition: 0.2s;
-            font-size: 0.9rem;
-        }
-        .btn-primary { background-color: var(--primary-600); color: white; }
-        .btn-primary:hover { background-color: var(--primary-700); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background-color: var(--primary-600); color: white; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4); }
+        .btn-primary:hover { background-color: var(--primary-700); transform: translateY(-1px); }
         .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
-        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        .btn-outline:hover { background-color: var(--bg-body); }
+        .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+        .btn-danger { background-color: #ef4444; color: white; }
         
-        input, select, textarea {
-            width: 100%; padding: 12px 16px;
-            border: 1px solid var(--border-color); border-radius: 8px;
-            background-color: var(--bg-body); color: var(--text-main);
-            outline: none; margin-bottom: 16px; font-size: 0.95rem;
-            transition: border-color 0.2s;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary-500); box-shadow: 0 0 0 2px var(--primary-100); }
+        input, select, textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-body); color: var(--text-main); outline: none; margin-bottom: 16px; font-size: 0.95rem; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary-500); box-shadow: 0 0 0 3px var(--primary-100); }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-secondary); }
 
-        /* ========================================
-        6. MODALS & OVERLAYS
-        ========================================
-        */
-        .modal-overlay {
-            position: fixed; inset: 0; background-color: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px); z-index: 1000;
-            display: none; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.3s ease;
-        }
+        /* ID Card Style */
+        .id-card { background: linear-gradient(135deg, var(--primary-600), #8b5cf6); color: white; border-radius: 16px; padding: 30px; text-align: center; max-width: 350px; margin: 0 auto; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); position: relative; overflow: hidden; }
+        .id-photo { width: 110px; height: 110px; border-radius: 50%; border: 4px solid white; margin: 0 auto 15px auto; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .id-barcode { font-family: monospace; font-size: 1.5rem; letter-spacing: 2px; margin-top: 20px; opacity: 0.8; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
         .modal-overlay.open { display: flex; opacity: 1; }
-        
-        .modal-container {
-            background-color: var(--bg-surface);
-            width: 90%; max-width: 450px;
-            border-radius: 20px; padding: 32px;
-            box-shadow: var(--shadow-lg);
-            transform: translateY(20px); transition: transform 0.3s ease;
-        }
+        .modal-container { background-color: var(--bg-surface); width: 90%; max-width: 420px; border-radius: 16px; padding: 32px; transform: translateY(20px); transition: 0.3s; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
         .modal-overlay.open .modal-container { transform: translateY(0); }
 
-        /* Login Specific */
-        .login-header { text-align: center; margin-bottom: 30px; }
-        .login-icon { font-size: 3rem; color: var(--primary-600); margin-bottom: 10px; }
-
-        /* ========================================
-        7. MOBILE RESPONSIVE
-        ========================================
-        */
-        .sidebar-overlay {
-            position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); z-index: 45; display: none;
-        }
-
+        .sidebar-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); z-index: 45; display: none; }
+        
         @media (max-width: 1024px) {
             .app-sidebar { position: fixed; left: -100%; top: 0; bottom: 0; }
             .app-sidebar.open { left: 0; }
             .sidebar-overlay.active { display: block; }
-            .hamburger-btn { display: block; }
-            .app-header { padding: 0 16px; }
+            .hamburger-btn { display: block; margin-right: 15px; }
+            .app-header { padding: 0 16px; justify-content: flex-start; }
+            .header-left { flex: 1; }
             .app-main { padding: 16px; }
-            .user-profile-pill span { display: none; }
+            .user-profile-pill span, .user-profile-pill div { display: none; }
+            .user-profile-pill { padding: 4px; }
         }
     </style>
 </head>
@@ -301,59 +137,53 @@
 
     <div class="modal-overlay" id="loginModal">
         <div class="modal-container">
-            <div class="login-header">
-                <div class="login-icon"><i class="fas fa-university"></i></div>
-                <h2>Portal Access</h2>
-                <p style="color: var(--text-secondary);">Secure login for Students & Faculty</p>
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="background: var(--primary-50); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;">
+                    <i class="fas fa-graduation-cap" style="font-size: 2.5rem; color: var(--primary-600);"></i>
+                </div>
+                <h2>Portal Login</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Access your academic dashboard</p>
             </div>
             <form onsubmit="handleLogin(event)">
-                <div style="text-align: left; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">User ID</div>
-                <input type="text" id="loginId" placeholder="e.g., STU001 or ADMIN" required>
-                
-                <div style="text-align: left; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">Password</div>
+                <label>User ID</label>
+                <input type="text" id="loginId" placeholder="e.g., ADMIN or STU001" required>
+                <label>Password</label>
                 <input type="password" id="loginPass" placeholder="Enter password" required>
-                
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 14px;">
-                    Login Securely <i class="fas fa-arrow-right"></i>
-                </button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Login to Portal</button>
             </form>
-            <button onclick="closeLoginModal()" class="btn btn-outline" style="width: 100%; margin-top: 12px; justify-content: center;">
-                Cancel
-            </button>
-            <div style="margin-top: 24px; padding: 12px; background: var(--bg-body); border-radius: 8px; font-size: 0.8rem; color: var(--text-secondary); text-align: center;">
-                <div><b>Admin:</b> ADMIN / 12345</div>
-                <div><b>Student:</b> STU001 / 12345</div>
+            <button onclick="closeLoginModal()" class="btn btn-outline" style="width: 100%; margin-top: 10px;">Cancel</button>
+            <div style="margin-top: 25px; padding: 15px; background: var(--bg-body); border-radius: 8px; font-size: 0.85rem; text-align: center; color: var(--text-secondary);">
+                <b>Admin:</b> ADMIN / 12345 <br> <b>Student:</b> STU001 / 12345
             </div>
         </div>
     </div>
 
     <aside class="app-sidebar" id="sidebar">
-        <div class="brand-logo">
-            <i class="fas fa-graduation-cap"></i> CAMPUSPULSE
-        </div>
+        <div class="brand-logo"><i class="fas fa-university"></i> CAMPUSPULSE</div>
 
         <div class="nav-section">
-            <div class="nav-section-title">General Access</div>
+            <div class="nav-section-title">General</div>
             <div class="nav-item active" onclick="navigate('home')"><i class="fas fa-home"></i> Home</div>
             <div class="nav-item" onclick="navigate('notices')"><i class="fas fa-bullhorn"></i> Notice Board</div>
-            <div class="nav-item" onclick="navigate('about')"><i class="fas fa-info-circle"></i> About Institute</div>
-            <div class="nav-item" onclick="navigate('contact')"><i class="fas fa-headset"></i> Help Desk</div>
         </div>
 
         <div class="nav-section hidden" id="menu-student">
-            <div class="nav-section-title">Student Dashboard</div>
-            <div class="nav-item" onclick="navigate('stu-dash')"><i class="fas fa-th-large"></i> Overview</div>
-            <div class="nav-item" onclick="navigate('stu-attendance')"><i class="fas fa-user-clock"></i> Attendance</div>
-            <div class="nav-item" onclick="navigate('stu-grievance')"><i class="fas fa-file-signature"></i> Grievance</div>
+            <div class="nav-section-title">Student Panel</div>
+            <div class="nav-item" onclick="navigate('stu-dash')"><i class="fas fa-chart-pie"></i> Dashboard</div>
+            <div class="nav-item" onclick="navigate('stu-id')"><i class="fas fa-id-badge"></i> Digital ID</div>
             <div class="nav-item" onclick="navigate('stu-timetable')"><i class="fas fa-calendar-alt"></i> Time Table</div>
+            <div class="nav-item" onclick="navigate('stu-results')"><i class="fas fa-file-alt"></i> Exam Results</div>
+            <div class="nav-item" onclick="navigate('stu-leave')"><i class="fas fa-envelope-open-text"></i> Apply Leave</div>
+            <div class="nav-item" onclick="navigate('stu-grievance')"><i class="fas fa-ticket-alt"></i> Helpdesk</div>
         </div>
 
         <div class="nav-section hidden" id="menu-admin">
-            <div class="nav-section-title">Administration</div>
-            <div class="nav-item" onclick="navigate('adm-dash')"><i class="fas fa-chart-pie"></i> Analytics</div>
-            <div class="nav-item" onclick="navigate('adm-users')"><i class="fas fa-users-cog"></i> User Manager</div>
-            <div class="nav-item" onclick="navigate('adm-tickets')"><i class="fas fa-tasks"></i> Ticket Audit</div>
-            <div class="nav-item" onclick="navigate('adm-notices')"><i class="fas fa-edit"></i> Edit Notices</div>
+            <div class="nav-section-title">Admin Panel</div>
+            <div class="nav-item" onclick="navigate('adm-dash')"><i class="fas fa-server"></i> Analytics</div>
+            <div class="nav-item" onclick="navigate('adm-users')"><i class="fas fa-users-cog"></i> Manage Students</div>
+            <div class="nav-item" onclick="navigate('adm-notices')"><i class="fas fa-edit"></i> Manage Notices</div>
+            <div class="nav-item" onclick="navigate('adm-leaves')"><i class="fas fa-check-double"></i> Leave Approvals</div>
+            <div class="nav-item" onclick="navigate('adm-tickets')"><i class="fas fa-tasks"></i> Support Tickets</div>
         </div>
     </aside>
 
@@ -361,99 +191,141 @@
         <header class="app-header">
             <div class="header-left">
                 <button class="hamburger-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-                <div class="page-title" id="headerTitle">Home</div>
+                <div class="page-title" id="headerTitle" style="font-weight: 700; font-size: 1.3rem;">Home</div>
             </div>
             
-            <div class="header-right">
-                <div class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-adjust"></i></div>
-                
-                <button id="headerLoginBtn" class="btn btn-primary btn-sm" onclick="openLoginModal()">
-                    <i class="fas fa-sign-in-alt"></i> Portal Login
-                </button>
+            <div class="header-right" style="display: flex; gap: 20px; align-items: center;">
+                <i class="fas fa-moon" onclick="toggleTheme()" style="cursor: pointer; font-size: 1.2rem; color: var(--text-secondary); transition: 0.2s;" id="themeToggleIcon"></i>
+                <button id="headerLoginBtn" class="btn btn-primary" onclick="openLoginModal()">Student / Admin Login</button>
 
-                <div id="headerProfile" class="user-profile-pill hidden" onclick="handleLogout()">
-                    <img src="https://ui-avatars.com/api/?name=Guest" id="headerAvatar" style="width: 32px; height: 32px; border-radius: 50%;">
-                    <div style="display: flex; flex-direction: column; line-height: 1.2;">
-                        <span id="headerName" style="font-size: 0.85rem; font-weight: 600;">Guest</span>
-                        <span id="headerRole" style="font-size: 0.7rem; color: var(--text-secondary);">Visitor</span>
+                <div id="headerProfile" class="user-profile-pill hidden" onclick="handleLogout()" title="Click to Logout">
+                    <img src="" id="headerAvatar" style="width: 36px; height: 36px; border-radius: 50%;">
+                    <div>
+                        <div id="headerName" style="font-size: 0.9rem; font-weight: 700;">Guest</div>
+                        <div id="headerRole" style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Role</div>
                     </div>
-                    <i class="fas fa-sign-out-alt" style="color: var(--danger);"></i>
                 </div>
             </div>
         </header>
 
         <main class="app-main">
-            
             <section id="view-home" class="view-section">
-                <div class="card" style="background: linear-gradient(135deg, var(--primary-600), var(--primary-700)); color: white; padding: 48px; border: none; text-align: center;">
-                    <h1 style="font-size: 2.5rem; margin-bottom: 16px;">Welcome to CampusPulse</h1>
-                    <p style="font-size: 1.1rem; opacity: 0.9; max-width: 600px; margin: 0 auto 32px auto;">
-                        The Next-Gen Enterprise Resource Planning System for Academic Excellence. Seamlessly connecting Students, Faculty, and Administration.
-                    </p>
-                    <div style="display: flex; gap: 16px; justify-content: center;">
-                        <button onclick="openLoginModal()" class="btn" style="background: white; color: var(--primary-600);">
-                            Access Portal <i class="fas fa-arrow-right"></i>
-                        </button>
-                        <button onclick="navigate('notices')" class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">
-                            View Notices
-                        </button>
-                    </div>
+                <div class="card" style="background: linear-gradient(135deg, var(--primary-600), #3b82f6); color: white; text-align: center; padding: 60px 20px; border: none;">
+                    <i class="fas fa-university" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.9;"></i>
+                    <h1 style="font-size: 2.5rem; margin-bottom: 15px; font-weight: 800;">Welcome to CampusPulse</h1>
+                    <p style="opacity: 0.9; max-width: 600px; margin: 0 auto; font-size: 1.1rem; line-height: 1.6;">Your integrated Multi-Utility Web Ecosystem. Streamlining academic and administrative operations securely and dynamically.</p>
                 </div>
-
-                <div class="grid-4">
-                    <div class="card stat-card">
-                        <div class="stat-value">2.5k+</div>
-                        <div class="stat-label">Students</div>
-                        <i class="fas fa-user-graduate stat-icon"></i>
+                <div class="grid-3">
+                    <div class="card stat-card" style="text-align: center; padding: 30px;">
+                        <i class="fas fa-globe" style="font-size: 2rem; color: var(--primary-500); margin-bottom: 15px;"></i>
+                        <h2 style="font-size: 2rem;">Active</h2><p style="color: var(--text-secondary);">Portal Status</p>
                     </div>
-                    <div class="card stat-card">
-                        <div class="stat-value">120+</div>
-                        <div class="stat-label">Faculty Members</div>
-                        <i class="fas fa-chalkboard-teacher stat-icon"></i>
+                    <div class="card stat-card" style="text-align: center; padding: 30px;">
+                        <i class="fas fa-headset" style="font-size: 2rem; color: #10b981; margin-bottom: 15px;"></i>
+                        <h2 style="font-size: 2rem;">24/7</h2><p style="color: var(--text-secondary);">Student Support</p>
                     </div>
-                    <div class="card stat-card">
-                        <div class="stat-value">98%</div>
-                        <div class="stat-label">Placement Rate</div>
-                        <i class="fas fa-briefcase stat-icon"></i>
-                    </div>
-                    <div class="card stat-card">
-                        <div class="stat-value">24/7</div>
-                        <div class="stat-label">Digital Library</div>
-                        <i class="fas fa-book stat-icon"></i>
+                    <div class="card stat-card" style="text-align: center; padding: 30px;">
+                        <i class="fas fa-laptop-code" style="font-size: 2rem; color: #f59e0b; margin-bottom: 15px;"></i>
+                        <h2 style="font-size: 2rem;">100%</h2><p style="color: var(--text-secondary);">Digital Access</p>
                     </div>
                 </div>
             </section>
 
             <section id="view-notices" class="view-section hidden">
                 <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Latest Announcements</div>
-                        <span class="badge badge-success">Live Updates</span>
-                    </div>
-                    <div id="public-notice-list">
-                        </div>
+                    <h3 style="display: flex; align-items: center; gap: 10px;"><i class="fas fa-bullhorn" style="color: var(--primary-600);"></i> Campus Announcements</h3>
+                    <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border-color);">
+                    <div id="public-notice-list"></div>
                 </div>
             </section>
 
             <section id="view-stu-dash" class="view-section hidden">
                 <div class="grid-2">
-                    <div class="card" style="background: linear-gradient(to right, #4f46e5, #6366f1); color: white;">
-                        <h2>Hello, <span class="user-name-span">Student</span>!</h2>
-                        <p style="opacity: 0.9; margin-top: 8px;">You have <b>3</b> upcoming classes today.</p>
+                    <div class="card" style="background: linear-gradient(to right, var(--primary-50), var(--primary-100)); border:none;">
+                        <h2 style="color: var(--primary-700); font-size: 1.8rem;">Welcome back, <span class="user-name-span">Student</span>! 👋</h2>
+                        <p style="margin-top: 15px; color: var(--primary-600); font-size: 1.1rem;">Your attendance is currently <b>85%</b> this semester. Keep up the good work!</p>
+                        <button class="btn btn-primary" style="margin-top: 20px;" onclick="navigate('stu-timetable')">View Time Table</button>
                     </div>
                     <div class="card">
-                        <div class="card-title">Quick Actions</div>
-                        <div style="display: flex; gap: 12px; margin-top: 16px;">
-                            <button onclick="navigate('stu-grievance')" class="btn btn-outline btn-sm">File Complaint</button>
-                            <button onclick="navigate('stu-timetable')" class="btn btn-outline btn-sm">View Timetable</button>
+                        <h3>Attendance Analytics</h3>
+                        <div style="height: 220px; margin-top: 15px;"><canvas id="studentAttendanceChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-stu-id" class="view-section hidden">
+                <div class="card" style="background: transparent; border: none; box-shadow: none;">
+                    <div class="id-card">
+                        <div style="font-weight: 800; font-size: 1.4rem; margin-bottom: 25px; letter-spacing: 1px;">CAMPUSPULSE</div>
+                        <img src="" id="id-photo-img" class="id-photo">
+                        <h2 class="user-name-span" style="margin-bottom: 8px; font-size: 1.5rem;">Student Name</h2>
+                        <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-top: 15px;">
+                            <p style="font-size: 0.95rem; margin-bottom: 5px;">Course: <b id="id-course-span">BCA</b></p>
+                            <p style="font-size: 0.95rem;">Roll No: <b id="id-roll-span">STU001</b></p>
+                        </div>
+                        <div class="id-barcode">||| || ||| | || |||</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-stu-timetable" class="view-section hidden">
+                <div class="card">
+                    <h3>Weekly Time Table</h3>
+                    <div class="table-responsive" style="margin-top: 20px;">
+                        <table>
+                            <thead><tr><th>Day</th><th>09:00 AM</th><th>10:00 AM</th><th>11:30 AM</th><th>01:00 PM</th></tr></thead>
+                            <tbody>
+                                <tr><td><b>Mon</b></td><td>Web Dev</td><td>DBMS</td><td><span class="badge badge-warning">Break</span></td><td>Java Lab</td></tr>
+                                <tr><td><b>Tue</b></td><td>Maths</td><td>Web Dev</td><td><span class="badge badge-warning">Break</span></td><td>Networking</td></tr>
+                                <tr><td><b>Wed</b></td><td>DBMS</td><td>Java</td><td><span class="badge badge-warning">Break</span></td><td>Project Work</td></tr>
+                                <tr><td><b>Thu</b></td><td>Networking</td><td>Maths</td><td><span class="badge badge-warning">Break</span></td><td>Web Dev Lab</td></tr>
+                                <tr><td><b>Fri</b></td><td>Java</td><td>Aptitude</td><td><span class="badge badge-warning">Break</span></td><td>Library</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-stu-results" class="view-section hidden">
+                <div class="card">
+                    <h3>Latest Exam Results</h3>
+                    <div class="table-responsive" style="margin-top: 20px;">
+                        <table>
+                            <thead><tr><th>Subject Code</th><th>Subject Name</th><th>Marks Obtained</th><th>Grade</th></tr></thead>
+                            <tbody>
+                                <tr><td>BCA501</td><td>Java Programming</td><td>85/100</td><td><span class="badge badge-success">A+</span></td></tr>
+                                <tr><td>BCA502</td><td>Web Technology</td><td>78/100</td><td><span class="badge badge-success">A</span></td></tr>
+                                <tr><td>BCA503</td><td>Software Engineering</td><td>82/100</td><td><span class="badge badge-success">A</span></td></tr>
+                                <tr><td>BCA504</td><td>Computer Networks</td><td>75/100</td><td><span class="badge badge-success">B+</span></td></tr>
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 20px; padding: 15px; background: var(--bg-body); border-radius: 8px; text-align: right; font-weight: 800; font-size: 1.2rem; color: var(--primary-700);">
+                            Overall CGPA: 8.4
                         </div>
                     </div>
                 </div>
-                
-                <div class="card">
-                    <div class="card-title" style="margin-bottom: 20px;">Attendance Overview</div>
-                    <div style="height: 250px;">
-                        <canvas id="studentAttendanceChart"></canvas>
+            </section>
+
+            <section id="view-stu-leave" class="view-section hidden">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Apply for Leave</h3>
+                        <form onsubmit="applyLeave(event)" style="margin-top: 20px;">
+                            <label>Dates Required</label>
+                            <input type="text" id="l-dates" placeholder="e.g., 15 March to 17 March" required>
+                            <label>Reason for Leave</label>
+                            <textarea id="l-reason" rows="4" placeholder="Briefly explain why you need leave..." required></textarea>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Application</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>My Leave History</h3>
+                        <div class="table-responsive" style="margin-top: 20px;">
+                            <table>
+                                <thead><tr><th>Dates</th><th>Status</th></tr></thead>
+                                <tbody id="stu-leave-tbody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -461,25 +333,26 @@
             <section id="view-stu-grievance" class="view-section hidden">
                 <div class="grid-2">
                     <div class="card">
-                        <div class="card-title">File New Grievance</div>
-                        <form onsubmit="submitTicket(event)" style="margin-top: 20px;">
-                            <label style="font-size: 0.9rem; font-weight: 600;">Department</label>
+                        <h3>File a Support Ticket</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">Facing an issue? Raise a ticket and admin will resolve it.</p>
+                        <form onsubmit="submitTicket(event)">
+                            <label>Department</label>
                             <select id="t-dept">
-                                <option>Examination</option><option>Accounts</option><option>Library</option><option>Hostel</option><option>IT Support</option>
+                                <option>IT & Portal Support</option>
+                                <option>Accounts & Fee</option>
+                                <option>Library</option>
+                                <option>Academics</option>
                             </select>
-                            
-                            <label style="font-size: 0.9rem; font-weight: 600;">Issue Description</label>
-                            <textarea id="t-desc" rows="4" placeholder="Please describe your issue in detail..." required></textarea>
-                            
-                            <button type="submit" class="btn btn-primary">Submit Ticket</button>
+                            <label>Issue Description</label>
+                            <textarea id="t-desc" rows="4" placeholder="Describe your problem in detail..." required></textarea>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-ticket-alt"></i> Submit Ticket</button>
                         </form>
                     </div>
-                    
                     <div class="card">
-                        <div class="card-title">My Ticket History</div>
-                        <div class="table-responsive" style="margin-top: 16px;">
+                        <h3>My Tickets</h3>
+                        <div class="table-responsive" style="margin-top: 20px;">
                             <table>
-                                <thead><tr><th>Ref ID</th><th>Dept</th><th>Status</th><th>Action</th></tr></thead>
+                                <thead><tr><th>Ticket ID</th><th>Status</th><th>Receipt</th></tr></thead>
                                 <tbody id="stu-ticket-tbody"></tbody>
                             </table>
                         </div>
@@ -488,129 +361,218 @@
             </section>
 
             <section id="view-adm-dash" class="view-section hidden">
-                <div class="grid-4">
-                    <div class="card stat-card">
-                        <div class="stat-value" id="adm-total-users">0</div>
-                        <div class="stat-label">Total Users</div>
+                <div class="grid-2">
+                    <div class="card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+                        <i class="fas fa-users" style="font-size: 3rem; color: var(--primary-500); margin-bottom: 10px;"></i>
+                        <h1 id="adm-total-users" style="font-size: 3.5rem; color: var(--text-main); font-weight: 800;">0</h1>
+                        <p style="color: var(--text-secondary); font-size: 1.1rem; font-weight: 500;">Registered Students</p>
                     </div>
-                    <div class="card stat-card">
-                        <div class="stat-value" id="adm-pending-tkt">0</div>
-                        <div class="stat-label">Pending Tickets</div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Grievance Analysis</div>
-                    <div style="height: 300px;">
-                        <canvas id="adminChart"></canvas>
+                    <div class="card">
+                        <h3>Tickets Resolution Overview</h3>
+                        <div style="height: 250px; margin-top: 15px;"><canvas id="adminChart"></canvas></div>
                     </div>
                 </div>
             </section>
 
             <section id="view-adm-users" class="view-section hidden">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Student Management</div>
-                        <button onclick="showAddUserModal()" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Student</button>
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Register New Student</h3>
+                        <form onsubmit="handleAddStudent(event)" style="margin-top: 20px;">
+                            <label>Full Name</label>
+                            <input type="text" id="add-stu-name" placeholder="Student Name" required>
+                            
+                            <div style="display: flex; gap: 15px;">
+                                <div style="flex: 1;">
+                                    <label>Roll Number / ID</label>
+                                    <input type="text" id="add-stu-id" placeholder="e.g., STU002" required>
+                                </div>
+                                <div style="flex: 1;">
+                                    <label>Course</label>
+                                    <select id="add-stu-course">
+                                        <option>BCA</option>
+                                        <option>B.Tech</option>
+                                        <option>BBA</option>
+                                        <option>MCA</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <label>Default Password</label>
+                            <input type="text" id="add-stu-pass" value="12345" required>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-user-plus"></i> Add Student to Database</button>
+                        </form>
                     </div>
-                    <div class="table-responsive">
+
+                    <div class="card">
+                        <h3>Student Database</h3>
+                        <div class="table-responsive" style="margin-top: 20px;">
+                            <table>
+                                <thead><tr><th>Name</th><th>ID</th><th>Course</th><th>Action</th></tr></thead>
+                                <tbody id="adm-users-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-adm-notices" class="view-section hidden">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Post New Notice</h3>
+                        <form onsubmit="addNotice(event)" style="margin-top: 20px;">
+                            <label>Notice Title</label>
+                            <input type="text" id="n-title" placeholder="e.g., Holiday Announcement" required>
+                            <label>Detailed Message</label>
+                            <textarea id="n-body" rows="5" placeholder="Write the notice content here..." required></textarea>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Publish Notice</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Manage Active Notices</h3>
+                        <div class="table-responsive" style="margin-top: 20px;">
+                            <table>
+                                <thead><tr><th>Title</th><th>Date</th><th>Action</th></tr></thead>
+                                <tbody id="adm-notices-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-adm-leaves" class="view-section hidden">
+                <div class="card">
+                    <h3>Student Leave Requests</h3>
+                    <div class="table-responsive" style="margin-top: 20px;">
                         <table>
-                            <thead><tr><th>Name</th><th>User ID</th><th>Department</th><th>Status</th><th>Action</th></tr></thead>
-                            <tbody id="adm-users-tbody"></tbody>
+                            <thead><tr><th>Student Name</th><th>Dates</th><th>Reason</th><th>Action</th></tr></thead>
+                            <tbody id="adm-leaves-tbody"></tbody>
                         </table>
                     </div>
                 </div>
             </section>
-            
+
             <section id="view-adm-tickets" class="view-section hidden">
                 <div class="card">
-                    <div class="card-title">Global Ticket Audit</div>
-                    <div class="table-responsive" style="margin-top: 16px;">
+                    <h3>Helpdesk Support Tickets</h3>
+                    <div class="table-responsive" style="margin-top: 20px;">
                         <table>
-                            <thead><tr><th>Student</th><th>ID</th><th>Issue</th><th>Status</th><th>Action</th></tr></thead>
+                            <thead><tr><th>Ticket ID</th><th>Student</th><th>Department & Issue</th><th>Status</th><th>Action</th></tr></thead>
                             <tbody id="adm-tickets-tbody"></tbody>
                         </table>
                     </div>
                 </div>
             </section>
-
-            <section id="view-contact" class="view-section hidden">
-                <div class="card"><h2>Help Desk</h2><p>Contact admin@campuspulse.edu for login issues.</p></div>
-            </section>
-            <section id="view-about" class="view-section hidden">
-                <div class="card"><h2>About Us</h2><p>CampusPulse is a state-of-the-art ERP solution developed by the BCA Dept.</p></div>
-            </section>
-            <section id="view-stu-timetable" class="view-section hidden">
-                <div class="card"><h2>Time Table</h2><p>Your class schedule is up to date.</p></div>
-            </section>
-
         </main>
     </div>
 
     <script>
-        /* --- CONSTANTS & STATE --- */
-        const DB_KEY_USERS = 'cp_v5_users';
-        const DB_KEY_TICKETS = 'cp_v5_tickets';
-        const DB_KEY_NOTICES = 'cp_v5_notices';
+        /* ========================================
+           DARK MODE PERSISTENCE
+        ======================================== */
+        function initTheme() {
+            const savedTheme = localStorage.getItem('cp_theme') || 'light';
+            if(savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggleIcon').classList.replace('fa-moon', 'fa-sun');
+            }
+        }
 
-        // Initial Data Seeding
+        function toggleTheme() {
+            const icon = document.getElementById('themeToggleIcon');
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                document.body.removeAttribute('data-theme');
+                localStorage.setItem('cp_theme', 'light');
+                icon.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('cp_theme', 'dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+        }
+
+        /* ========================================
+           ROBUST LOCALSTORAGE DATABASE
+        ======================================== */
+        const DB_USERS = 'cp_users_v2';
+        const DB_TICKETS = 'cp_tickets_v2';
+        const DB_NOTICES = 'cp_notices_v2';
+        const DB_LEAVES = 'cp_leaves_v2';
+
         const defaultUsers = [
-            { id: 'ADMIN', pass: '12345', name: 'System Admin', role: 'admin', dept: 'IT' },
-            { id: 'STU001', pass: '12345', name: 'Rahul Sharma', role: 'student', dept: 'BCA' },
-            { id: 'STU002', pass: '12345', name: 'Priya Singh', role: 'student', dept: 'BBA' }
+            { id: 'ADMIN', pass: '12345', name: 'System Admin', role: 'admin', dept: 'Management' },
+            { id: 'STU001', pass: '12345', name: 'Nadeem', role: 'student', dept: 'BCA' }
         ];
 
-        const defaultNotices = [
-            { title: 'Mid-Sem Exams', date: '10 Feb 2026', body: 'Exams start from 15th Feb. Check schedule.' },
-            { title: 'Holiday Declared', date: '08 Feb 2026', body: 'Campus closed on Friday due to Maintenance.' }
-        ];
-
+        // Central State Object
         let state = {
-            users: JSON.parse(localStorage.getItem(DB_KEY_USERS)) || defaultUsers,
-            tickets: JSON.parse(localStorage.getItem(DB_KEY_TICKETS)) || [],
-            notices: JSON.parse(localStorage.getItem(DB_KEY_NOTICES)) || defaultNotices,
+            users: JSON.parse(localStorage.getItem(DB_USERS)) || defaultUsers,
+            tickets: JSON.parse(localStorage.getItem(DB_TICKETS)) || [],
+            notices: JSON.parse(localStorage.getItem(DB_NOTICES)) || [{ title: 'Welcome to CampusPulse', date: '01 March 2026', body: 'The ERP portal is now live for all students and faculty.' }],
+            leaves: JSON.parse(localStorage.getItem(DB_LEAVES)) || [],
             currentUser: JSON.parse(sessionStorage.getItem('cp_session')) || null
         };
 
-        // Initialize App
+        // Ensure defaults are saved if first time
+        if(!localStorage.getItem(DB_USERS)) saveState();
+
         window.onload = () => {
-            if(state.currentUser) {
-                initSessionUI();
-            } else {
+            initTheme(); 
+            if(state.currentUser) initSessionUI();
+            else {
                 renderPublicNotices();
+                // Show modal automatically for easy testing (optional)
+                // setTimeout(openLoginModal, 500);
             }
-            saveState();
         };
 
-        /* --- NAVIGATION --- */
+        function saveState() {
+            localStorage.setItem(DB_USERS, JSON.stringify(state.users));
+            localStorage.setItem(DB_TICKETS, JSON.stringify(state.tickets));
+            localStorage.setItem(DB_NOTICES, JSON.stringify(state.notices));
+            localStorage.setItem(DB_LEAVES, JSON.stringify(state.leaves));
+        }
+
+        /* ========================================
+           NAVIGATION LOGIC
+        ======================================== */
         function navigate(viewId) {
-            // Hide all views
+            // Hide all views and remove active class from menu
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
-            // Show target view
-            const target = document.getElementById('view-' + viewId);
-            if(target) target.classList.remove('hidden');
-
-            // Active Menu State
-            // (Simplified: active class logic based on click is handled in sidebar click, but here we can force it if needed)
             
-            // Header Title Update
-            const titles = {
-                'home': 'Home', 'notices': 'Notice Board', 'stu-dash': 'Dashboard', 
-                'stu-grievance': 'Grievance Redressal', 'adm-dash': 'Admin Analytics'
-            };
+            // Show selected view
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+            
+            // Highlight menu item (Fixed typo from 'Maps' to 'navigate')
+            const clickedMenu = Array.from(document.querySelectorAll('.nav-item')).find(el => el.getAttribute('onclick') === `Maps('${viewId}')`);
+            if(clickedMenu) clickedMenu.classList.add('active');
+
+            // Update Header Title
+            const titles = { 'home': 'Home', 'notices': 'Notice Board', 'stu-dash': 'Student Dashboard', 'stu-id': 'Digital ID Card', 'stu-timetable': 'Class Time Table', 'stu-results': 'Exam Results', 'stu-leave': 'Leave Application', 'stu-grievance': 'Helpdesk Support', 'adm-dash': 'Admin Analytics', 'adm-users': 'Student Database', 'adm-notices': 'Manage Notices', 'adm-leaves': 'Leave Approvals', 'adm-tickets': 'Support Tickets' };
             document.getElementById('headerTitle').innerText = titles[viewId] || 'CampusPulse';
 
-            // Mobile Sidebar Close
-            if(window.innerWidth < 1024) toggleSidebar();
+            // Close sidebar on mobile
+            if(window.innerWidth <= 1024) toggleSidebar();
 
-            // Load View Data
+            // Trigger specific data renders based on view
             if(viewId === 'notices') renderPublicNotices();
-            if(viewId === 'stu-dash') loadStudentCharts();
-            if(viewId === 'stu-grievance') renderStudentTickets();
-            if(viewId === 'adm-dash') loadAdminCharts();
-            if(viewId === 'adm-users') renderAdminUsers();
-            if(viewId === 'adm-tickets') renderAdminTickets();
+            
+            if(state.currentUser && state.currentUser.role === 'student') {
+                if(viewId === 'stu-dash') loadStudentCharts();
+                if(viewId === 'stu-id') populateIDCard();
+                if(viewId === 'stu-leave') renderStudentLeaves();
+                if(viewId === 'stu-grievance') renderStudentTickets();
+            }
+            
+            if(state.currentUser && state.currentUser.role === 'admin') {
+                if(viewId === 'adm-dash') loadAdminCharts();
+                if(viewId === 'adm-users') renderAdminUsers();
+                if(viewId === 'adm-notices') renderAdminNotices();
+                if(viewId === 'adm-leaves') renderAdminLeaves();
+                if(viewId === 'adm-tickets') renderAdminTickets();
+            }
         }
 
         function toggleSidebar() {
@@ -618,53 +580,52 @@
             document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        /* --- AUTHENTICATION --- */
-        function openLoginModal() {
-            document.getElementById('loginModal').classList.add('open');
-        }
-        function closeLoginModal() {
-            document.getElementById('loginModal').classList.remove('open');
-        }
+        /* ========================================
+           AUTHENTICATION (Login/Logout)
+        ======================================== */
+        function openLoginModal() { document.getElementById('loginModal').classList.add('open'); }
+        function closeLoginModal() { document.getElementById('loginModal').classList.remove('open'); }
 
         function handleLogin(e) {
             e.preventDefault();
-            const u = document.getElementById('loginId').value;
-            const p = document.getElementById('loginPass').value;
+            const uid = document.getElementById('loginId').value.trim().toUpperCase();
+            const pass = document.getElementById('loginPass').value.trim();
 
-            const user = state.users.find(x => x.id === u && x.pass === p);
+            // Verify against localStorage array
+            const user = state.users.find(u => u.id === uid && u.pass === pass);
             
             if(user) {
                 state.currentUser = user;
                 sessionStorage.setItem('cp_session', JSON.stringify(user));
                 closeLoginModal();
                 initSessionUI();
-                alert(`Welcome, ${user.name}`);
+                
+                // Clear form
+                document.getElementById('loginId').value = '';
+                document.getElementById('loginPass').value = '';
             } else {
-                alert('Invalid Credentials');
+                alert('Invalid Credentials! Please check your ID and Password.');
             }
         }
 
         function handleLogout() {
-            if(confirm('Logout of Portal?')) {
-                state.currentUser = null;
+            if(confirm('Are you sure you want to logout?')) {
                 sessionStorage.removeItem('cp_session');
-                location.reload(); // Clean reset
+                location.reload(); 
             }
         }
 
         function initSessionUI() {
             const user = state.currentUser;
-            
-            // Header Updates
             document.getElementById('headerLoginBtn').classList.add('hidden');
             document.getElementById('headerProfile').classList.remove('hidden');
             document.getElementById('headerName').innerText = user.name;
-            document.getElementById('headerRole').innerText = user.role.toUpperCase();
-            document.getElementById('headerAvatar').src = `https://ui-avatars.com/api/?name=${user.name}&background=random`;
-            
+            document.getElementById('headerRole').innerText = user.role;
+            document.getElementById('headerAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff&bold=true`;
+
+            // Populate global name spans
             document.querySelectorAll('.user-name-span').forEach(el => el.innerText = user.name);
 
-            // Sidebar Updates
             if(user.role === 'student') {
                 document.getElementById('menu-student').classList.remove('hidden');
                 navigate('stu-dash');
@@ -674,180 +635,316 @@
             }
         }
 
-        /* --- PUBLIC MODULES --- */
-        function renderPublicNotices() {
-            const container = document.getElementById('public-notice-list');
-            container.innerHTML = state.notices.map(n => `
-                <div style="border-left: 4px solid var(--primary-600); padding: 16px; background: var(--bg-body); margin-bottom: 12px; border-radius: 0 8px 8px 0;">
-                    <h4 style="margin-bottom: 4px; color: var(--text-main);">${n.title}</h4>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px;">${n.body}</p>
-                    <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);"><i class="far fa-calendar-alt"></i> ${n.date}</div>
-                </div>
-            `).join('');
+        /* ========================================
+           STUDENT FUNCTIONS
+        ======================================== */
+        function populateIDCard() {
+            const u = state.currentUser;
+            document.getElementById('id-photo-img').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=fff&color=6366f1&size=150&bold=true`;
+            document.getElementById('id-course-span').innerText = u.dept;
+            document.getElementById('id-roll-span').innerText = u.id;
         }
 
-        /* --- STUDENT MODULES --- */
+        function applyLeave(e) {
+            e.preventDefault();
+            const leaveData = {
+                id: Date.now(), 
+                uid: state.currentUser.id, 
+                name: state.currentUser.name,
+                dates: document.getElementById('l-dates').value, 
+                reason: document.getElementById('l-reason').value, 
+                status: 'Pending'
+            };
+            state.leaves.push(leaveData);
+            saveState(); 
+            e.target.reset(); 
+            renderStudentLeaves(); 
+            alert('Leave Application Submitted Successfully!');
+        }
+
+        function renderStudentLeaves() {
+            const myLeaves = state.leaves.filter(l => l.uid === state.currentUser.id);
+            const tbody = document.getElementById('stu-leave-tbody');
+            if(myLeaves.length === 0) return tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color: var(--text-muted);">No leave records found</td></tr>';
+            
+            tbody.innerHTML = myLeaves.reverse().map(l => `<tr>
+                <td>${l.dates}</td>
+                <td><span class="badge ${l.status==='Pending'?'badge-warning':l.status==='Approved'?'badge-success':'badge-danger'}">${l.status}</span></td>
+            </tr>`).join('');
+        }
+
         function submitTicket(e) {
             e.preventDefault();
-            const t = {
-                id: 'TKT' + Math.floor(Math.random() * 9000),
-                uid: state.currentUser.id,
+            const newTicket = {
+                id: 'TKT' + Math.floor(Math.random() * 9000), 
+                uid: state.currentUser.id, 
                 name: state.currentUser.name,
-                dept: document.getElementById('t-dept').value,
-                desc: document.getElementById('t-desc').value,
+                dept: document.getElementById('t-dept').value, 
+                desc: document.getElementById('t-desc').value, 
                 status: 'Pending',
-                date: new Date().toLocaleDateString()
             };
-            state.tickets.push(t);
-            saveState();
-            alert('Ticket Submitted: ' + t.id);
-            e.target.reset();
-            renderStudentTickets();
+            state.tickets.push(newTicket);
+            saveState(); 
+            e.target.reset(); 
+            renderStudentTickets(); 
+            alert('Ticket Submitted Successfully! Admin will review it soon.');
         }
 
         function renderStudentTickets() {
             const myTickets = state.tickets.filter(t => t.uid === state.currentUser.id);
             const tbody = document.getElementById('stu-ticket-tbody');
-            if(myTickets.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No History Found</td></tr>';
+            if(myTickets.length === 0) return tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">No tickets raised</td></tr>';
+
+            tbody.innerHTML = myTickets.reverse().map(t => `<tr>
+                <td><b>${t.id}</b></td>
+                <td><span class="badge ${t.status === 'Pending' ? 'badge-warning' : 'badge-success'}">${t.status}</span></td>
+                <td><button class="btn btn-sm btn-outline" onclick="generatePDF('${t.id}')"><i class="fas fa-download"></i> PDF</button></td>
+            </tr>`).join('');
+        }
+
+        /* ========================================
+           ADMIN FUNCTIONS
+        ======================================== */
+        function renderPublicNotices() {
+            const container = document.getElementById('public-notice-list');
+            if(state.notices.length === 0) return container.innerHTML = '<p style="color: var(--text-muted);">No announcements at this time.</p>';
+
+            container.innerHTML = state.notices.map(n => `
+                <div style="padding: 20px; background: var(--bg-body); border-left: 5px solid var(--primary-600); border-radius: 8px; margin-bottom: 15px;">
+                    <h4 style="margin-bottom: 8px; font-size: 1.1rem; color: var(--primary-700);">${n.title}</h4>
+                    <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 10px; line-height: 1.5;">${n.body}</p>
+                    <small style="color: var(--text-muted); font-weight: 600;"><i class="far fa-calendar-alt"></i> Posted: ${n.date}</small>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminNotices() {
+            const tbody = document.getElementById('adm-notices-tbody');
+            if(state.notices.length === 0) return tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No notices found</td></tr>';
+            
+            tbody.innerHTML = state.notices.map((n, idx) => `<tr>
+                <td style="font-weight: 600;">${n.title}</td>
+                <td><small>${n.date}</small></td>
+                <td><button onclick="deleteNotice(${idx})" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button></td>
+            </tr>`).join('');
+        }
+
+        function addNotice(e) {
+            e.preventDefault();
+            const date = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+            state.notices.unshift({ 
+                title: document.getElementById('n-title').value, 
+                body: document.getElementById('n-body').value, 
+                date: date 
+            });
+            saveState(); 
+            e.target.reset(); 
+            renderAdminNotices(); 
+            alert('Notice Published to Dashboard!');
+        }
+
+        function deleteNotice(idx) { 
+            if(confirm('Delete this notice?')) {
+                state.notices.splice(idx, 1); 
+                saveState(); 
+                renderAdminNotices(); 
+            }
+        }
+
+        // New Robust Add Student Function
+        function handleAddStudent(e) {
+            e.preventDefault();
+            const name = document.getElementById('add-stu-name').value;
+            const id = document.getElementById('add-stu-id').value.toUpperCase().trim();
+            const dept = document.getElementById('add-stu-course').value;
+            const pass = document.getElementById('add-stu-pass').value;
+
+            // Check if ID already exists
+            if(state.users.some(u => u.id === id)) {
+                alert('A user with this Roll Number/ID already exists!');
                 return;
             }
-            tbody.innerHTML = myTickets.map(t => `
-                <tr>
-                    <td><b>${t.id}</b></td>
-                    <td>${t.dept}</td>
-                    <td><span class="badge ${t.status==='Pending'?'badge-warning':'badge-success'}">${t.status}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-outline" onclick="generatePDF('${t.id}')"><i class="fas fa-print"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+
+            state.users.push({ id, pass, name, role: 'student', dept });
+            saveState();
+            e.target.reset();
+            renderAdminUsers();
+            loadAdminCharts(); // Update total users counter
+            alert(`Student ${name} (${id}) added successfully! They can now login.`);
         }
 
-        function loadStudentCharts() {
-            // Mock Chart
-            const ctx = document.getElementById('studentAttendanceChart').getContext('2d');
-            if(window.stuChart) window.stuChart.destroy();
-            window.stuChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-                    datasets: [{
-                        label: 'Hours Attended',
-                        data: [5, 4, 6, 5, 3],
-                        backgroundColor: '#6366f1',
-                        borderRadius: 4
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
-
-        /* --- ADMIN MODULES --- */
         function renderAdminUsers() {
-            const tbody = document.getElementById('adm-users-tbody');
             const students = state.users.filter(u => u.role === 'student');
-            tbody.innerHTML = students.map(u => `
-                <tr>
-                    <td>${u.name}</td>
-                    <td><b>${u.id}</b></td>
-                    <td>${u.dept}</td>
-                    <td><span class="badge badge-success">Active</span></td>
-                    <td><button onclick="removeUser('${u.id}')" class="btn btn-sm" style="color: var(--danger);"><i class="fas fa-trash"></i></button></td>
-                </tr>
-            `).join('');
+            const tbody = document.getElementById('adm-users-tbody');
+            
+            document.getElementById('adm-total-users').innerText = students.length;
+            
+            if(students.length === 0) return tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No students registered</td></tr>';
+
+            tbody.innerHTML = students.map(u => `<tr>
+                <td>${u.name}</td>
+                <td><b>${u.id}</b></td>
+                <td><span class="badge badge-success">${u.dept}</span></td>
+                <td><button onclick="deleteUser('${u.id}')" class="btn btn-sm btn-outline" style="color: #ef4444; border-color: #ef4444;"><i class="fas fa-trash"></i> Remove</button></td>
+            </tr>`).join('');
         }
 
-        function removeUser(id) {
-            if(confirm('Delete user?')) {
-                state.users = state.users.filter(u => u.id !== id);
-                saveState();
-                renderAdminUsers();
-            }
+        function deleteUser(id) { 
+            if(confirm(`Are you sure you want to permanently delete student ID: ${id}?`)) { 
+                state.users = state.users.filter(u => u.id !== id); 
+                
+                // Also optionally delete their tickets/leaves to keep db clean
+                state.tickets = state.tickets.filter(t => t.uid !== id);
+                state.leaves = state.leaves.filter(l => l.uid !== id);
+                
+                saveState(); 
+                renderAdminUsers(); 
+            } 
         }
 
-        function showAddUserModal() {
-            const name = prompt("Enter Student Name:");
-            const id = prompt("Enter Student ID:");
-            const dept = prompt("Enter Department (BCA/BBA):");
-            if(name && id) {
-                state.users.push({ id, pass: '12345', name, role: 'student', dept });
-                saveState();
-                renderAdminUsers();
-            }
+        function renderAdminLeaves() {
+            const tbody = document.getElementById('adm-leaves-tbody');
+            if(state.leaves.length === 0) return tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No leave requests</td></tr>';
+            
+            tbody.innerHTML = state.leaves.slice().reverse().map(l => `<tr>
+                <td><b>${l.name}</b></td>
+                <td>${l.dates}</td>
+                <td style="white-space: normal; min-width: 200px;"><small>${l.reason}</small></td>
+                <td>
+                    ${l.status === 'Pending' ? 
+                        `<div style="display:flex; gap:8px;">
+                            <button onclick="updateLeave(${l.id}, 'Approved')" class="btn btn-sm btn-primary"><i class="fas fa-check"></i></button> 
+                            <button onclick="updateLeave(${l.id}, 'Rejected')" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+                        </div>` 
+                        : `<span class="badge ${l.status==='Approved'?'badge-success':'badge-danger'}">${l.status}</span>`
+                    }
+                </td>
+            </tr>`).join('');
+        }
+
+        function updateLeave(id, status) { 
+            state.leaves.find(l => l.id === id).status = status; 
+            saveState(); 
+            renderAdminLeaves(); 
         }
 
         function renderAdminTickets() {
             const tbody = document.getElementById('adm-tickets-tbody');
-            tbody.innerHTML = state.tickets.map((t, idx) => `
-                <tr>
-                    <td>${t.name}</td>
-                    <td>${t.id}</td>
-                    <td><small>${t.desc.substring(0,15)}...</small></td>
-                    <td><span class="badge ${t.status==='Pending'?'badge-warning':'badge-success'}">${t.status}</span></td>
-                    <td>${t.status === 'Pending' ? `<button onclick="resolveTicket(${idx})" class="btn btn-sm btn-primary">Solve</button>` : 'Resolved'}</td>
-                </tr>
-            `).join('');
+            if(state.tickets.length === 0) return tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No support tickets</td></tr>';
+
+            tbody.innerHTML = state.tickets.slice().reverse().map(t => `<tr>
+                <td><b>${t.id}</b></td>
+                <td>${t.name}</td>
+                <td style="white-space: normal; min-width: 200px;">
+                    <span class="badge badge-warning" style="margin-bottom:5px; display:inline-block;">${t.dept}</span><br>
+                    <small>${t.desc}</small>
+                </td>
+                <td><span class="badge ${t.status === 'Pending' ? 'badge-warning' : 'badge-success'}">${t.status}</span></td>
+                <td>
+                    ${t.status === 'Pending' ? `<button onclick="resolveTicket('${t.id}')" class="btn btn-sm btn-primary">Mark Resolved</button>` : `<i class="fas fa-check-circle" style="color:#10b981; font-size:1.2rem;"></i>`}
+                </td>
+            </tr>`).join('');
         }
 
-        function resolveTicket(idx) {
-            state.tickets[idx].status = 'Resolved';
-            saveState();
-            renderAdminTickets();
+        function resolveTicket(ticketId) { 
+            state.tickets.find(t => t.id === ticketId).status = 'Resolved'; 
+            saveState(); 
+            renderAdminTickets(); 
+            loadAdminCharts();
         }
 
-        function loadAdminCharts() {
-            document.getElementById('adm-total-users').innerText = state.users.length;
-            document.getElementById('adm-pending-tkt').innerText = state.tickets.filter(t => t.status === 'Pending').length;
-
-            const ctx = document.getElementById('adminChart').getContext('2d');
-            const pending = state.tickets.filter(t => t.status === 'Pending').length;
-            const resolved = state.tickets.filter(t => t.status === 'Resolved').length;
-
-            if(window.admChart) window.admChart.destroy();
-            window.admChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Pending', 'Resolved'],
-                    datasets: [{
-                        data: [pending, resolved],
-                        backgroundColor: ['#f59e0b', '#10b981']
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
-
-        /* --- PDF GEN --- */
+        /* ========================================
+           UTILITIES & CHARTS
+        ======================================== */
         function generatePDF(ticketId) {
             const t = state.tickets.find(x => x.id === ticketId);
-            const { jsPDF } = window.jspdf;
+            const { jsPDF } = window.jspdf; 
             const doc = new jsPDF();
-            doc.setFontSize(22);
-            doc.text("CampusPulse Grievance Receipt", 20, 20);
+            
+            // Header
+            doc.setFillColor(79, 70, 229); // Primary color
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont("helvetica", "bold"); 
+            doc.setFontSize(22); 
+            doc.text("CAMPUSPULSE ERP", 20, 25);
+            
+            // Content
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(16);
+            doc.text("Support Ticket Receipt", 20, 60);
+            
+            doc.setFont("helvetica", "normal"); 
             doc.setFontSize(12);
-            doc.text(`Ticket ID: ${t.id}`, 20, 40);
-            doc.text(`Student: ${t.name}`, 20, 50);
-            doc.text(`Dept: ${t.dept}`, 20, 60);
-            doc.text(`Status: ${t.status}`, 20, 70);
-            doc.text(`Description:`, 20, 90);
-            doc.text(t.desc, 20, 100);
+            doc.text(`Ticket Reference : ${t.id}`, 20, 80);
+            doc.text(`Student Name     : ${t.name}`, 20, 90);
+            doc.text(`Department       : ${t.dept}`, 20, 100);
+            doc.text(`Current Status   : ${t.status}`, 20, 110);
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text(`Issue Description:`, 20, 130);
+            doc.setFont("helvetica", "normal"); 
+            doc.text(doc.splitTextToSize(t.desc, 170), 20, 140);
+            
+            // Footer
+            doc.setFontSize(10);
+            doc.setTextColor(150, 150, 150);
+            doc.text("This is a computer generated document.", 20, 280);
+            
             doc.save(`Ticket_${t.id}.pdf`);
         }
 
-        /* --- UTILS --- */
-        function saveState() {
-            localStorage.setItem(DB_KEY_USERS, JSON.stringify(state.users));
-            localStorage.setItem(DB_KEY_TICKETS, JSON.stringify(state.tickets));
-            localStorage.setItem(DB_KEY_NOTICES, JSON.stringify(state.notices));
+        function loadStudentCharts() {
+            const canvas = document.getElementById('studentAttendanceChart');
+            if(!canvas) return; // Prevent crash if canvas isn't loaded
+            
+            const ctx = canvas.getContext('2d');
+            if(window.stuChart) window.stuChart.destroy();
+            window.stuChart = new Chart(ctx, { 
+                type: 'bar', 
+                data: { 
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], 
+                    datasets: [{ 
+                        label: 'Lectures Attended', 
+                        data: [4, 5, 3, 5, 4], 
+                        backgroundColor: '#6366f1', 
+                        borderRadius: 6 
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 6 } }
+                } 
+            });
         }
 
-        function toggleTheme() {
-            if(document.body.hasAttribute('data-theme')) {
-                document.body.removeAttribute('data-theme');
-            } else {
-                document.body.setAttribute('data-theme', 'dark');
-            }
+        function loadAdminCharts() {
+            const canvas = document.getElementById('adminChart');
+            if(!canvas) return;
+
+            const pending = state.tickets.filter(t => t.status === 'Pending').length;
+            const resolved = state.tickets.filter(t => t.status === 'Resolved').length;
+            
+            const ctx = canvas.getContext('2d');
+            if(window.admChart) window.admChart.destroy();
+            
+            window.admChart = new Chart(ctx, { 
+                type: 'doughnut', 
+                data: { 
+                    labels: ['Pending', 'Resolved'], 
+                    datasets: [{ 
+                        data: [pending, resolved], 
+                        backgroundColor: ['#f59e0b', '#10b981'],
+                        borderWidth: 0
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    cutout: '70%'
+                } 
+            });
         }
     </script>
 </body>
